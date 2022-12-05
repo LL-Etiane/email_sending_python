@@ -1,5 +1,6 @@
 import smtplib
 import ssl #this for securing your connection
+from email.message import EmailMessage
 
 SMTP_SERVER = "smtp.gmail.com"
 PORT = 465
@@ -9,23 +10,17 @@ PASSWORD = "Your password here"
 ssl_context = ssl.create_default_context() #to be used in securing the connection
 
 receiver_email = "reciever's email"
-message = """\
-Subject: Your subject here
-
+subject = "Subject here"
+message_body = """
 Then message body here. Keep the above new line for proper formating
 """
-try:
-    print("Connecting to server")
-    server = smtplib.SMTP_SSL(SMTP_SERVER,PORT, context=ssl_context)
 
-    print("Logining in")
-    server.login(YOUR_EMAIL, PASSWORD)
+emailObj = EmailMessage()
+emailObj['from'] = YOUR_EMAIL 
+emailObj['to'] = receiver_email
+emailObj['subject'] = subject
+emailObj.set_content(message_body)
 
-    print("sending email")
-
-    #send email
-    server.sendmail(YOUR_EMAIL, receiver_email, message)
-
-except Exception as e:
-    print(e)
-    
+with smtplib.SMTP_SSL(SMTP_SERVER,PORT, context=ssl_context) as smtp_sever:
+    smtp_sever.login(YOUR_EMAIL, PASSWORD)
+    smtp_sever.sendmail(YOUR_EMAIL, receiver_email, emailObj.as_string())
